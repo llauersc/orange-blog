@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.RegisterRequest;
+import com.example.backend.exception.CustomException;
 import com.example.backend.service.AuthService;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/auth")
@@ -29,7 +32,12 @@ public class AuthController {
 
   @GetMapping("/verification/{token}")
   public ResponseEntity<String> verification(@PathVariable String token) {
-    authService.verification(token);
+
+    try {
+      authService.verification(token);
+    } catch(CustomException e) {
+      return new ResponseEntity<>("Link is expired", HttpStatus.FORBIDDEN);
+    }
     return new ResponseEntity<>("Account verified", HttpStatus.OK);
   }
 }

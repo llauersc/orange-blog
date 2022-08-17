@@ -9,11 +9,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@EnableAsync
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
-  
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
   @Override
   public void configure(HttpSecurity http) throws Exception {
     http

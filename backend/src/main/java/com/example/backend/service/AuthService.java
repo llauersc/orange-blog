@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.scheduling.annotation.Async;
@@ -57,14 +58,17 @@ public class AuthService {
     return token;
   }
 
-  @Async
   @Transactional
-  public void verification(String token) {
+  public void verification(String token) throws CustomException {
     VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
       .orElseThrow(() -> new CustomException("Token not found"));
 
     User user = userRepository.findByUsername(verificationToken.getUser().getUsername())
       .orElseThrow(() -> new CustomException("User not found"));
+    
+    if(verificationToken.getExpiresAt().isBefore(Instant.now())) {
+      throw new CustomException("Verification token is expired");
+    }
 
     user.setEnabled(true);
     userRepository.save(user);
