@@ -3,7 +3,7 @@ package com.example.backend.service;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,23 +29,24 @@ public class AuthService {
   private final PasswordEncoder passwordEncoder;
   private final VerificationTokenRepository verificationTokenRepository;
   private final MailService mailService;
+  private final AuthenticationManager authenticationManager;
 
   @Transactional
   public void signup(RegisterRequest registerRequest) {
     User user = new User(
-      registerRequest.getUsername(),
-      passwordEncoder.encode(registerRequest.getPassword()),
-      registerRequest.getEmail(),
-      false);
+        registerRequest.getUsername(),
+        passwordEncoder.encode(registerRequest.getPassword()),
+        registerRequest.getEmail(),
+        false);
 
     userRepository.save(user);
 
     String token = generateVerificationToken(user);
 
     mailService.sendMail(new NotificationEmail("Please Activate your Account",
-      user.getEmail(),
+        user.getEmail(),
         "Please click on the below url to activate your account : " +
-        "http://localhost:8080/api/auth/verification/" + token));
+            "http://localhost:8080/api/auth/verification/" + token));
 
     log.info("Mail was sent to " + user.getEmail() + " with token: " + token);
   }
@@ -61,12 +62,12 @@ public class AuthService {
   @Transactional
   public void verification(String token) throws CustomException {
     VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
-      .orElseThrow(() -> new CustomException("Token not found"));
+        .orElseThrow(() -> new CustomException("Token not found"));
 
     User user = userRepository.findByUsername(verificationToken.getUser().getUsername())
-      .orElseThrow(() -> new CustomException("User not found"));
-    
-    if(verificationToken.getExpiresAt().isBefore(Instant.now())) {
+        .orElseThrow(() -> new CustomException("User not found"));
+
+    if (verificationToken.getExpiresAt().isBefore(Instant.now())) {
       throw new CustomException("Verification token is expired");
     }
 

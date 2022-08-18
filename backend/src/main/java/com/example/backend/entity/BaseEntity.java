@@ -1,7 +1,7 @@
 package com.example.backend.entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.Instant;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,13 +22,13 @@ public abstract class BaseEntity implements Serializable {
   private Long id;
 
   @CreatedDate
-  private Date createdAt;
+  private Instant createdAt;
 
   @LastModifiedDate
-  private Date updatedAt;
+  private Instant updatedAt;
 
   @PreUpdate
   public void setChangeDate() {
-    this.updatedAt = new Date();
+    this.updatedAt = Instant.now();
   }
 }
