@@ -1,7 +1,6 @@
 package com.example.backend.entity;
 
 import java.time.Instant;
-import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

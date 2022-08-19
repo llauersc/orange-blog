@@ -1,7 +1,6 @@
 package com.example.backend.controller;
 
 import java.time.Instant;
-import java.util.Date;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +24,6 @@ import com.example.backend.service.AuthService;
 import com.example.backend.service.RefreshTokenService;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @AllArgsConstructor
