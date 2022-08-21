@@ -54,6 +54,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .authorizeHttpRequests((authorize) -> authorize
             .antMatchers("/api/auth/**")
             .permitAll()
+            .antMatchers("/swagger-ui/**", "/v3/api-docs/**") // http://localhost:8080/swagger-ui/index.html
+            .permitAll()
             .anyRequest()
             .authenticated())
         .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)

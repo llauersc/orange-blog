@@ -3,11 +3,15 @@ package com.example.backend.service;
 import java.time.Instant;
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.backend.dto.AuthenticationResponse;
+import com.example.backend.dto.RefreshTokenRequest;
 import com.example.backend.dto.RegisterRequest;
 import com.example.backend.entity.NotificationEmail;
 import com.example.backend.entity.User;
@@ -15,6 +19,7 @@ import com.example.backend.entity.VerificationToken;
 import com.example.backend.exception.CustomException;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.repository.VerificationTokenRepository;
+import com.example.backend.security.JwtProvider;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +35,8 @@ public class AuthService {
   private final VerificationTokenRepository verificationTokenRepository;
   private final MailService mailService;
   private final AuthenticationManager authenticationManager;
+  private final JwtProvider jwtProvider;
+  private final RefreshTokenService refreshTokenService;
 
   @Transactional
   public void signup(RegisterRequest registerRequest) {
@@ -73,5 +80,21 @@ public class AuthService {
 
     user.setEnabled(true);
     userRepository.save(user);
+  }
+
+  public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) throws CustomException {
+    try {
+      refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
+    } catch (CustomException ex) {
+      throw new CustomException(ex.getMessage());
+    }
+    
+    String token = jwtProvider.generateTokenWithUserName(refreshTokenRequest.getUsername());
+    return AuthenticationResponse.builder()
+        .authenticationToken(token)
+        .refreshToken(refreshTokenRequest.getRefreshToken())
+        .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMs()))
+        .username(refreshTokenRequest.getUsername())
+        .build();
   }
 }
