@@ -3,9 +3,6 @@ package com.example.backend.service;
 import java.time.Instant;
 import java.util.UUID;
 
-import javax.validation.Valid;
-
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +31,6 @@ public class AuthService {
   private final PasswordEncoder passwordEncoder;
   private final VerificationTokenRepository verificationTokenRepository;
   private final MailService mailService;
-  private final AuthenticationManager authenticationManager;
   private final JwtProvider jwtProvider;
   private final RefreshTokenService refreshTokenService;
 
